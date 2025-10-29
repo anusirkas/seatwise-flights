@@ -32,7 +32,7 @@ Veebirakendus, mis võimaldab kasutajal:
 
 ## 💬 Märkused ja õpikohad
 
-See proovitöö oli minu jaoks suur õppimise võimalus. Olen õppinud front-end arendust alles ~5 kuud, seega oli see esimene kord, kus püüdsin teha midagi täismahus — koos disaini, navigeerimise ja komponentide ülesehitusega.
+See projekt oli minu jaoks suur õppimise võimalus. Olles õppinud front-end arendust alles ~5 kuud, oli see esimene kord, kus püüdsin teha midagi täismahus — koos disaini, navigeerimise ja komponentide ülesehitusega.
 
 ### Mis sain tehtud:
 - Lendude list koos mock-andmetega
@@ -43,7 +43,7 @@ See proovitöö oli minu jaoks suur õppimise võimalus. Olen õppinud front-end
 
 ### Mis oli keeruline:
 - Tailwindi seadistamine Vite projektis — versioon 4 tõi kaasa uusi muudatusi, mis ei sobinud varasema PostCSS konfiguratsiooniga. Tekkinud konfliktid takistasid Tailwindi klasside rakendumist ka pärast mitmeid parandusi. Proovisin isegi GitHubist malli kloonida (https://github.com/theodorusclarence/vite-react-tailwind-starter), kuid probleemid püsisid. Proovisin terve päeva ainuüksi seda probleemi lahendada, aga ei saanud hakkama.
-- Docker jäi seekord ajapuuduse tõttu tegemata
+- Docker jäi seekord tegemata.
 
 ### Kuidas õppisin:
 Kasutasingi seda projekti kui õppimise võimalust. Kasutasin ChatGPT abi nagu mentorit, et saada aru erinevatest tehnilistest sammudest, mitte lihtsalt kopeerida. Kogu kood on ise kirjutatud, testitud ja kohandatud. Isegi kui midagi jäi poolikuks, sain väga palju juurde arusaamises, kuidas rakendused toimivad. Ma polnud elus varem ka Tailwind CSS-i kasutanud. Positiivse noodina kasvatas see mu huvi koodimise osas veelgi enam ja tahan ikkagi selle projekti lõpuni ära teha.
