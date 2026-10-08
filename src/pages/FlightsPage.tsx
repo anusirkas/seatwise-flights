@@ -1,12 +1,16 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
+import Plane from "../components/Plane";
+import RouteMap from "../components/RouteMap";
+import SplitFlap from "../components/SplitFlap";
 import { FLIGHTS, formatDate } from "../lib/flights";
 
 const MAX_PRICE = Math.max(...FLIGHTS.map((f) => f.price));
 
 export default function FlightsPage() {
   const [params, setParams] = useSearchParams();
+  const [hovered, setHovered] = useState<string>();
   const to = params.get("to") ?? "";
   const maxPrice = Number(params.get("max") ?? MAX_PRICE);
 
@@ -25,46 +29,60 @@ export default function FlightsPage() {
   return (
     <>
       <Header />
-      <main className="page">
-        <section className="intro">
-          <p className="eyebrow">Departures · Tallinn</p>
-          <h1>
-            Pick a flight.
-            <br />
-            We&apos;ll find your seats.
-          </h1>
-          <p className="lead">
-            Tell Seatwise who&apos;s travelling and what matters: a window, legroom, being near an exit, sitting together.
-            It scores every free seat on the plane and explains its choice.
-          </p>
-        </section>
+      <section className="hero">
+        <div className="contrail" aria-hidden="true">
+          <span className="contrail-trail" />
+          <Plane size={28} className="contrail-plane" />
+        </div>
+        <div className="hero-inner">
+          <div className="hero-text">
+            <p className="eyebrow light">Departures · Tallinn</p>
+            <h1>
+              Pick a flight.
+              <br />
+              We&apos;ll find your <span className="hl">seats.</span>
+            </h1>
+            <p className="lead">
+              Tell Seatwise who&apos;s travelling and what matters: a window, legroom, being near an exit, sitting
+              together. It scores every free seat on the plane and explains its choice.
+            </p>
+          </div>
+          <RouteMap active={hovered ?? (to || undefined)} />
+        </div>
+      </section>
 
-        <form className="filters" onSubmit={(e) => e.preventDefault()}>
-          <label>
-            <span>Destination</span>
-            <select value={to} onChange={(e) => update("to", e.target.value)}>
-              <option value="">Anywhere</option>
-              {FLIGHTS.map((f) => (
-                <option key={f.id} value={f.toCode}>
-                  {f.to} ({f.toCode})
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="range">
-            <span>
-              Max price <output>€{maxPrice}</output>
-            </span>
-            <input
-              type="range"
-              min={50}
-              max={MAX_PRICE}
-              step={10}
-              value={maxPrice}
-              onChange={(e) => update("max", e.target.value === String(MAX_PRICE) ? "" : e.target.value)}
-            />
-          </label>
-        </form>
+      <main className="page">
+        <div className="board-bar">
+          <h2 className="board-title">
+            <SplitFlap text="DEPARTURES" />
+          </h2>
+          <form className="filters" onSubmit={(e) => e.preventDefault()}>
+            <label>
+              <span>Destination</span>
+              <select value={to} onChange={(e) => update("to", e.target.value)}>
+                <option value="">Anywhere</option>
+                {FLIGHTS.map((f) => (
+                  <option key={f.id} value={f.toCode}>
+                    {f.to} ({f.toCode})
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="range">
+              <span>
+                Max price <output>€{maxPrice}</output>
+              </span>
+              <input
+                type="range"
+                min={50}
+                max={MAX_PRICE}
+                step={10}
+                value={maxPrice}
+                onChange={(e) => update("max", e.target.value === String(MAX_PRICE) ? "" : e.target.value)}
+              />
+            </label>
+          </form>
+        </div>
 
         <div className="board" role="table" aria-label="Departures">
           <div className="board-head" role="row">
@@ -77,22 +95,32 @@ export default function FlightsPage() {
               Choose
             </span>
           </div>
-          {flights.map((f) => {
+          {flights.map((f, i) => {
             const left = Math.round(180 * (1 - f.loadFactor));
             return (
-              <Link key={f.id} to={`/flights/${f.id}`} className="board-row" role="row">
+              <Link
+                key={f.id}
+                to={`/flights/${f.id}`}
+                className="board-row"
+                role="row"
+                onMouseEnter={() => setHovered(f.toCode)}
+                onMouseLeave={() => setHovered(undefined)}
+                onFocus={() => setHovered(f.toCode)}
+                onBlur={() => setHovered(undefined)}
+              >
                 <span role="cell" className="mono">
                   <strong>{f.departs}</strong>
                   <small>{formatDate(f.date)}</small>
                 </span>
                 <span role="cell" className="dest">
-                  {f.to} <small className="mono">{f.toCode}</small>
+                  <SplitFlap text={f.to.toUpperCase()} delay={250 + i * 90} />
+                  <small className="mono">{f.toCode}</small>
                 </span>
                 <span role="cell" className="mono">
                   {f.number}
                 </span>
                 <span role="cell" className={`mono ${left < 30 ? "low" : ""}`}>
-                  ~{left}
+                  {left < 30 ? `Only ~${left}` : `~${left}`}
                 </span>
                 <span role="cell" className="mono price">
                   €{f.price}

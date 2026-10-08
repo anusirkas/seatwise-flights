@@ -1,4 +1,5 @@
-/* Seatwise: airport wayfinding. Navy, signal yellow, monospaced flight data. */
+/* Seatwise: airport wayfinding meets the sky. Night navy, signal yellow, boarding-pass white,
+   one airline red; a departure board that clatters into place and a contrail across the hero. */
 :root {
   --navy: #0f1b2d;
   --navy-2: #1c2b43;
@@ -12,6 +13,8 @@
   --taken: #b9c3d0;
   --legroom: #e8f7ee;
   --warn: #b4441a;
+  --red: #e63946;
+  --dusk: #f08a4b;
   --sans: "Space Grotesk", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, monospace;
 }
@@ -84,18 +87,22 @@ h1 {
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 2px;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 22px;
+  letter-spacing: -0.02em;
   text-decoration: none;
 }
 
-.logo-mark {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px 6px 3px 3px;
-  background: var(--yellow);
-  box-shadow: inset 0 -6px 0 rgba(15, 27, 45, 0.25);
+.logo-plane {
+  margin: 0 1px;
+  color: var(--yellow);
+  transform: rotate(45deg);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.logo:hover .logo-plane {
+  transform: rotate(45deg) translate(0, -3px);
 }
 
 .header-note {
@@ -111,10 +118,43 @@ h1 {
   padding: 0 clamp(16px, 4vw, 48px) 64px;
 }
 
-/* ---------- Departures ---------- */
-.intro {
-  padding: clamp(32px, 6vw, 72px) 0 28px;
-  max-width: 760px;
+/* ---------- Hero: route map and contrail ---------- */
+.eyebrow.light {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  color: var(--white);
+  background:
+    radial-gradient(ellipse 70% 60% at 85% 110%, rgba(240, 138, 75, 0.35), transparent 70%),
+    linear-gradient(180deg, var(--navy) 0%, #142644 70%, #1d3052 100%);
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(24px, 4vw, 64px);
+  align-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: clamp(40px, 7vw, 88px) clamp(16px, 4vw, 48px) clamp(48px, 7vw, 80px);
+}
+
+.hero h1 {
+  font-size: clamp(38px, 5.2vw, 68px);
+}
+
+.hl {
+  color: var(--yellow);
+}
+
+.hero .lead {
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 520px;
 }
 
 .lead {
@@ -123,12 +163,232 @@ h1 {
   color: var(--muted);
 }
 
+/* a plane crosses the sky every so often, leaving a fading trail */
+.contrail {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.contrail-trail,
+.contrail-plane {
+  position: absolute;
+  top: 22%;
+  left: 0;
+}
+
+.contrail-trail {
+  width: 46vw;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55));
+  transform-origin: right center;
+  animation: trail 22s linear infinite;
+}
+
+.contrail-plane {
+  margin-top: -13px;
+  color: var(--white);
+  rotate: 80deg;
+  animation: fly 22s linear infinite;
+}
+
+@keyframes fly {
+  0% {
+    transform: translate(-10vw, 6vh);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  55% {
+    transform: translate(110vw, -6vh);
+    opacity: 1;
+  }
+  56%,
+  100% {
+    transform: translate(110vw, -6vh);
+    opacity: 0;
+  }
+}
+
+@keyframes trail {
+  0% {
+    transform: translate(-56vw, 6vh) rotate(-3deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  55% {
+    transform: translate(64vw, -6vh) rotate(-3deg);
+    opacity: 0.9;
+  }
+  75%,
+  100% {
+    transform: translate(64vw, -6vh) rotate(-3deg);
+    opacity: 0;
+  }
+}
+
+.route-map {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.route-line {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 1.5;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(0.3s + var(--i) * 0.12s);
+  transition: stroke 0.25s, stroke-width 0.25s;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.route-dot {
+  fill: var(--white);
+  opacity: 0;
+  animation: appear 0.4s ease forwards;
+  animation-delay: calc(1.1s + var(--i) * 0.12s);
+  transition: r 0.25s, fill 0.25s;
+}
+
+.route-code {
+  font-family: var(--mono);
+  font-size: 12px;
+  fill: rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  animation: appear 0.4s ease forwards;
+  animation-delay: calc(1.2s + var(--i) * 0.12s);
+}
+
+@keyframes appear {
+  to {
+    opacity: 1;
+  }
+}
+
+.route.is-active .route-line {
+  stroke: var(--yellow);
+  stroke-width: 2.5;
+}
+
+.route.is-active .route-dot {
+  fill: var(--yellow);
+}
+
+.route.is-active .route-code {
+  fill: var(--yellow);
+}
+
+.home-dot {
+  fill: var(--yellow);
+}
+
+.home-pulse {
+  fill: none;
+  stroke: var(--yellow);
+  stroke-width: 2;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulse 2.4s ease-out infinite;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(3.4);
+    opacity: 0;
+  }
+}
+
+.home-code {
+  fill: var(--yellow) !important;
+  font-weight: 700;
+  opacity: 1;
+  animation: none;
+}
+
+/* ---------- Departures ---------- */
+.board-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px 32px;
+  margin: clamp(28px, 4vw, 48px) 0 18px;
+}
+
+.board-title {
+  margin: 0;
+}
+
+/* Solari tiles */
+.flap {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.flap-tile,
+.flap-gap {
+  display: inline-grid;
+  place-items: center;
+  width: 0.92em;
+  height: 1.3em;
+  font-family: var(--mono);
+  font-weight: 700;
+}
+
+.flap-tile {
+  position: relative;
+  border-radius: 3px;
+  background: var(--navy);
+  color: var(--yellow);
+}
+
+.flap-tile::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.flap-gap {
+  width: 0.45em;
+}
+
+.board-title .flap {
+  font-size: clamp(22px, 3vw, 34px);
+}
+
+.dest .flap {
+  font-size: 17px;
+}
+
+.dest .flap-tile {
+  background: #24375a;
+  color: var(--white);
+}
+
 .filters {
   display: flex;
   flex-wrap: wrap;
   gap: 16px 32px;
   align-items: end;
-  margin-bottom: 20px;
 }
 
 .filters label {
@@ -204,16 +464,18 @@ h1 {
 }
 
 .dest {
-  font-size: 22px;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
 }
 
 .dest small {
-  margin-left: 6px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .low {
-  color: #ff9e7a;
+  color: #ff8a92;
 }
 
 .price {
@@ -567,6 +829,20 @@ legend {
 }
 
 /* ---------- Small screens ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .contrail {
+    display: none;
+  }
+  .route-line,
+  .route-dot,
+  .route-code,
+  .home-pulse {
+    animation: none;
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
 @media (max-width: 1080px) {
   .seats-layout {
     grid-template-columns: 260px auto;
@@ -579,6 +855,9 @@ legend {
 }
 
 @media (max-width: 760px) {
+  .hero-inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .seats-layout {
     grid-template-columns: minmax(0, 1fr);
   }

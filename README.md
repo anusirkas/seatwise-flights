@@ -4,6 +4,8 @@ Pick a flight, say who's travelling and what matters (a window, extra legroom, b
 
 **Live:** https://seatwise-flights.vercel.app
 
+![Departures board with a route map from Tallinn](docs/departures.webp)
+
 ![Seat map with the recommended seats and a boarding pass](docs/seats.webp)
 
 ## How the recommendation works
