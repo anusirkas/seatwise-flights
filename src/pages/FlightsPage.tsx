@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Plane from "../components/Plane";
@@ -10,7 +10,14 @@ const MAX_PRICE = Math.max(...FLIGHTS.map((f) => f.price));
 
 export default function FlightsPage() {
   const [params, setParams] = useSearchParams();
-  const [hovered, setHovered] = useState<string>();
+  const [hovered, setHoveredNow] = useState<string>();
+  // a short delay before highlighting, so sweeping the mouse across the map doesn't flicker
+  const hoverTimer = useRef(0);
+  const setHovered = (code: string | undefined) => {
+    window.clearTimeout(hoverTimer.current);
+    hoverTimer.current = window.setTimeout(() => setHoveredNow(code), code ? 120 : 60);
+  };
+  useEffect(() => () => window.clearTimeout(hoverTimer.current), []);
   const to = params.get("to") ?? "";
   const maxPrice = Number(params.get("max") ?? MAX_PRICE);
 
