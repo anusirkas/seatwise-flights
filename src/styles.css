@@ -286,7 +286,27 @@ h1 {
 }
 
 .route.is-active .route-code {
+  opacity: 0;
+}
+
+.route {
+  cursor: pointer;
+}
+
+.route-hit {
+  fill: transparent;
+}
+
+.route-label {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
   fill: var(--yellow);
+  paint-order: stroke;
+  stroke: var(--navy);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+  pointer-events: none;
 }
 
 .home-dot {

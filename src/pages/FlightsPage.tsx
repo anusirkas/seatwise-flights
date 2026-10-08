@@ -47,7 +47,7 @@ export default function FlightsPage() {
               together. It scores every free seat on the plane and explains its choice.
             </p>
           </div>
-          <RouteMap active={hovered ?? (to || undefined)} />
+          <RouteMap active={hovered ?? (to || undefined)} onHover={setHovered} />
         </div>
       </section>
 
@@ -113,7 +113,7 @@ export default function FlightsPage() {
                   <small>{formatDate(f.date)}</small>
                 </span>
                 <span role="cell" className="dest">
-                  <SplitFlap text={f.to.toUpperCase()} delay={250 + i * 90} />
+                  <SplitFlap text={f.to.toUpperCase()} delay={(i % 3) * 90} />
                   <small className="mono">{f.toCode}</small>
                 </span>
                 <span role="cell" className="mono">

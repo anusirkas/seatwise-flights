@@ -24,9 +24,16 @@ function arc(a: readonly [number, number], b: readonly [number, number]) {
   return `M${a[0]},${a[1]} Q${mx + dy * bend},${my - dx * bend} ${b[0]},${b[1]}`;
 }
 
-/** Routes out of Tallinn, drawn in one by one. Highlights the destination being hovered. */
-export default function RouteMap({ active }: { active?: string }) {
+type Props = {
+  /** Airport code to highlight, from a hovered map point or departure row. */
+  active?: string;
+  onHover?: (code: string | undefined) => void;
+};
+
+/** Routes out of Tallinn, drawn in one by one. Hovering a destination names it in full. */
+export default function RouteMap({ active, onHover }: Props) {
   const home = project(AIRPORTS.TLL);
+  const activeFlight = FLIGHTS.find((f) => f.toCode === active);
   return (
     <svg className="route-map" viewBox="0 0 600 400" role="img" aria-label="Route map: flights from Tallinn">
       <defs>
@@ -39,15 +46,34 @@ export default function RouteMap({ active }: { active?: string }) {
         const to = project(AIRPORTS[f.toCode]);
         const isActive = active === f.toCode;
         return (
-          <g key={f.id} className={`route ${isActive ? "is-active" : ""}`} style={{ "--i": i } as React.CSSProperties}>
+          <g
+            key={f.id}
+            className={`route ${isActive ? "is-active" : ""}`}
+            style={{ "--i": i } as React.CSSProperties}
+            onMouseEnter={() => onHover?.(f.toCode)}
+            onMouseLeave={() => onHover?.(undefined)}
+          >
             <path d={arc(home, to)} pathLength={1} className="route-line" />
             <circle cx={to[0]} cy={to[1]} r={isActive ? 6 : 4} className="route-dot" />
+            {/* a bigger invisible target, so the small dots are easy to hover */}
+            <circle cx={to[0]} cy={to[1]} r="18" className="route-hit" />
             <text x={to[0]} y={to[1] + 18} textAnchor="middle" className="route-code">
               {f.toCode}
             </text>
           </g>
         );
       })}
+      {/* the full name goes on its own top layer, so it is never hidden behind other routes */}
+      {activeFlight && (
+        <text
+          x={project(AIRPORTS[activeFlight.toCode])[0]}
+          y={project(AIRPORTS[activeFlight.toCode])[1] + 18}
+          textAnchor="middle"
+          className="route-label"
+        >
+          {activeFlight.toCode} · {activeFlight.to}
+        </text>
+      )}
       <circle cx={home[0]} cy={home[1]} r="7" className="home-dot" />
       <circle cx={home[0]} cy={home[1]} r="7" className="home-pulse" />
       <text x={home[0]} y={home[1] - 14} textAnchor="middle" className="route-code home-code">
