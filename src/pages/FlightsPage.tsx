@@ -108,7 +108,7 @@ export default function FlightsPage() {
       </main>
       <footer className="footer">
         Built by <a href="https://portfolio-anu-sirkas-projects.vercel.app">Anu Sirkas</a> · React, TypeScript, Vitest ·{" "}
-        <a href="https://github.com/anusirkas/flight-seat-app">Source</a>
+        <a href="https://github.com/anusirkas/seatwise-flights">Source</a>
       </footer>
     </>
   );

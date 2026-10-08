@@ -2,7 +2,7 @@
 
 Pick a flight, say who's travelling and what matters (a window, extra legroom, being near an exit, sitting together), and Seatwise picks the best free seats on the plane and explains its choice. Tap any seat to override it.
 
-**Live:** https://flight-seat-app.vercel.app
+**Live:** https://seatwise-flights.vercel.app
 
 ![Seat map with the recommended seats and a boarding pass](docs/seats.webp)
 
